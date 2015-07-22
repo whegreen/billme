@@ -66,7 +66,7 @@
     <!--</FrameLayout>-->
     <fragment xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools" android:id="@+id/fragment"
-        android:name="com.theprototypo.billme.chat.ChatActivityFragment"
+        android:name="com.theprototypo.billme.ui.chat.ChatActivityFragment"
         tools:layout="@layout/fragment_billme_chat"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

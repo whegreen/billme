@@ -10,4 +10,7 @@
 
     <dimen name="spacing">8dp</dimen>
 
+    <dimen name="padding">16dp</dimen>
+    <dimen name="listview_item_padding">16dp</dimen>
+
 </resources>
