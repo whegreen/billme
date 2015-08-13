@@ -1,17 +1,18 @@
 package com.theprototypo.billme.util.api;
 
 import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import com.squareup.okhttp.OkHttpClient;
 import com.theprototypo.billme.util.api.balance.BalanceService;
+import com.theprototypo.billme.util.api.chat.GetChatResponseModel;
+import com.theprototypo.billme.util.api.chat.GetRecentChatResponseModel;
+import com.theprototypo.billme.util.api.chat.PostChatResponseModel;
 import com.theprototypo.billme.util.api.chat.ChatService;
+import com.theprototypo.billme.util.api.chat.PutChatResponseModel;
+import com.theprototypo.billme.util.api.user.GetUserResponseModel;
+import com.theprototypo.billme.util.api.user.LoginResponseModel;
 import com.theprototypo.billme.util.api.user.UserService;
-
-import java.util.concurrent.TimeUnit;
 
 import retrofit.Callback;
 import retrofit.RestAdapter;
-import retrofit.client.OkClient;
 
 /**
  * Created by walesadanto on 2/7/15.
@@ -20,8 +21,8 @@ public class APICallManager {
 
     private static APICallManager instance;
     private RestAdapter restAdapter;
-    private String endPoint = "https://s3-ap-southeast-1.amazonaws.com/whe-bucket";
-    public static Boolean usingMock = true;
+    private String endPoint = "http://billme.elasticbeanstalk.com";
+//    public static Boolean usingMock = true;
 
     private String authentification;
 
@@ -48,6 +49,7 @@ public class APICallManager {
 
         restAdapter = new RestAdapter.Builder()
                 .setEndpoint(endPoint)
+                .setLogLevel(RestAdapter.LogLevel.FULL)
                 .build();
     }
 
@@ -55,42 +57,46 @@ public class APICallManager {
         return authentification;
     }
 
+    public void setAuthentification(String authentification) {
+        this.authentification = authentification;
+    }
 
     // USERS API
 
-    public boolean getUsers(Callback<JsonArray> callback) {
+    public boolean getUsers(Callback<GetUserResponseModel> callback) {
         UserService userService = restAdapter.create(UserService.class);
         userService.getUsers(getAuthentification(), callback);
         return true;
     }
 
-    public boolean loginFacebook(String facebookId, Callback<JsonObject> callback) {
+    public boolean loginFacebook(String facebookId, String firstName, String lastName,
+                                 String email, Callback<LoginResponseModel> callback) {
         UserService userService = restAdapter.create(UserService.class);
-        userService.loginFacebook(facebookId, callback);
+        userService.loginFacebook(facebookId, firstName, lastName, email, callback);
         return true;
     }
 
     // CHATS API
 
-    public boolean getRecentChatList(Callback<JsonArray> callback) {
+    public boolean getRecentChatList(Callback<GetRecentChatResponseModel> callback) {
         ChatService chatService = restAdapter.create(ChatService.class);
         chatService.getRecentChatList(getAuthentification(), callback);
         return true;
     }
 
-    public boolean getChat(String friendUserId, Callback<JsonObject> callback) {
+    public boolean getChat(String friendUserId, Callback<GetChatResponseModel> callback) {
         ChatService chatService = restAdapter.create(ChatService.class);
         chatService.getChat(getAuthentification(), friendUserId, callback);
         return true;
     }
 
-    public boolean postChat(String friendUserId, String text, Callback<JsonObject> callback) {
+    public boolean postChat(String friendUserId, String text, Callback<PostChatResponseModel> callback) {
         ChatService chatService = restAdapter.create(ChatService.class);
         chatService.postChat(getAuthentification(), friendUserId, text, callback);
         return true;
     }
 
-    public boolean updateTransaction(String friendUserId, String chatId, String actionStatus, Callback<JsonObject> callback) {
+    public boolean updateTransaction(String friendUserId, String chatId, String actionStatus, Callback<PutChatResponseModel> callback) {
         ChatService chatService = restAdapter.create(ChatService.class);
         chatService.updateTransaction(getAuthentification(), friendUserId, chatId, actionStatus, callback);
         return true;

@@ -11,6 +11,9 @@ import android.view.ViewGroup;
 import com.facebook.AccessToken;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
+import com.facebook.GraphRequest;
+import com.facebook.GraphResponse;
+import com.facebook.HttpMethod;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.google.gson.JsonObject;
@@ -20,6 +23,13 @@ import com.theprototypo.billme.ui.login.mvp.LoginPresenterImpl;
 import com.theprototypo.billme.ui.login.mvp.LoginView;
 import com.theprototypo.billme.ui.main.MainActivity;
 import com.theprototypo.billme.util.api.APICallManager;
+import com.theprototypo.billme.util.api.chat.PostChatResponseModel;
+import com.theprototypo.billme.util.api.user.LoginResponseModel;
+import com.theprototypo.billme.util.common.PreferencesManager;
+
+import org.json.JSONException;
+
+import java.util.List;
 
 import retrofit.Callback;
 import retrofit.RetrofitError;
@@ -35,6 +45,7 @@ public class LoginFragment extends Fragment implements LoginView {
     private LoginPresenter presenter;
 
     public LoginFragment() {
+
     }
 
     @Override
@@ -61,7 +72,70 @@ public class LoginFragment extends Fragment implements LoginView {
             @Override
             public void onSuccess(LoginResult loginResult) {
                 // App code
-                ((LoginPresenterImpl) presenter).loginSuccess();
+
+                final String userId = loginResult.getAccessToken().getUserId();
+
+                /* make the API call */
+                new GraphRequest(
+                        AccessToken.getCurrentAccessToken(),
+                        userId,
+                        null,
+                        HttpMethod.GET,
+                        new GraphRequest.Callback() {
+                            public void onCompleted(GraphResponse response) {
+                                /* handle the result */
+
+                                String id = "", firstName = "", lastName = "", email = "";
+                                try {
+                                    id = response.getJSONObject().getString("id");
+                                    firstName = response.getJSONObject().getString("first_name");
+                                    lastName = response.getJSONObject().getString("last_name");
+                                    email = response.getJSONObject().getString("email");
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+
+                                new GraphRequest(
+                                        AccessToken.getCurrentAccessToken(),
+                                        "/"+userId+"/picture",
+                                        null,
+                                        HttpMethod.GET,
+                                        new GraphRequest.Callback() {
+                                            public void onCompleted(GraphResponse response) {
+                                                        /* handle the result */
+                                                response.getJSONObject();
+                                            }
+                                        }
+                                ).executeAsync();
+
+
+                                APICallManager.getInstance().loginFacebook(id,
+                                    firstName, lastName, email,
+                                    new Callback<LoginResponseModel>() {
+                                        @Override
+                                        public void success(LoginResponseModel loginResponseModel, Response response) {
+
+                                            List list = loginResponseModel.getData();
+                                            String auth = "";
+                                            for (Object temp : list) {
+                                                auth = ((LoginResponseModel.LoginResponseData) temp).getAuth();
+                                            }
+                                            APICallManager.getInstance().setAuthentification(auth);
+                                            PreferencesManager.saveAuthToken(getActivity().getBaseContext(), auth);
+                                            ((LoginPresenterImpl) presenter).loginSuccess();
+                                        }
+
+                                        @Override
+                                        public void failure(RetrofitError error) {
+                                            ((LoginPresenterImpl) presenter).loginCancel();
+                                        }
+                                    });
+
+                            }
+
+                        }
+                ).executeAsync();
+
             }
 
             @Override
@@ -84,21 +158,6 @@ public class LoginFragment extends Fragment implements LoginView {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         ((LoginActivity)getActivity()).getCallbackManager().onActivityResult(requestCode, resultCode, data);
-    }
-
-    public void doLogin(String facebookId){
-        APICallManager.getInstance().loginFacebook(facebookId, new Callback<JsonObject>() {
-            @Override
-            public void success(JsonObject jsonObject, Response response) {
-                ((LoginPresenterImpl) presenter).loginSuccess();
-            }
-
-            @Override
-            public void failure(RetrofitError error) {
-
-                ((LoginPresenterImpl) presenter).loginError();
-            }
-        });
     }
 
     @Override

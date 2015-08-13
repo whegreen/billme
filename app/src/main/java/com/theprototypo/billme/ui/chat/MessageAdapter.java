@@ -6,7 +6,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-
 import com.theprototypo.billme.R;
 import com.theprototypo.billme.ui.chat.mvp.message.Message;
 
@@ -23,6 +22,10 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
     public MessageAdapter(Context context, List<com.theprototypo.billme.ui.chat.mvp.message.Message> messages) {
         mMessages = messages;
         mUsernameColors = context.getResources().getIntArray(R.array.username_colors);
+    }
+
+    public void setmMessages(List<Message> mMessages) {
+        this.mMessages = mMessages;
     }
 
     @Override

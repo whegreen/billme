@@ -28,12 +28,30 @@
         android:id="@+id/avatar"
         android:layout_width="@dimen/list_item_avatar_size"
         android:layout_height="@dimen/list_item_avatar_size"
-        android:layout_marginRight="16dp"/>
+        android:layout_marginRight="6dp"
+        android:layout_marginLeft="4dp"
+        android:layout_marginTop="2dp"
+        android:layout_weight="0"
+        />
 
     <TextView
         android:id="@android:id/text1"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="?attr/textAppearanceListItem"/>
+        android:textAppearance="?attr/textAppearanceListItem"
+        android:padding="1dp"
+        android:layout_weight="1"
+        />
+
+    <TextView
+        android:id="@android:id/text2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?attr/textAppearanceListItem"
+        android:gravity="end"
+        android:textColor="#fff5a7ff"
+        android:layout_weight="0"
+        android:layout_marginRight="2dp"
+        />
 
 </LinearLayout>

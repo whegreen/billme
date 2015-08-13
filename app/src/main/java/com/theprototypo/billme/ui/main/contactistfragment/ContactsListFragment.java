@@ -34,7 +34,9 @@ import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.CursorAdapter;
+import android.support.v7.widget.SearchView;
 import android.text.SpannableString;
 import android.text.TextUtils;
 import android.text.style.TextAppearanceSpan;
@@ -44,6 +46,7 @@ import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
+
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -52,7 +55,6 @@ import android.widget.AdapterView;
 import android.widget.AlphabetIndexer;
 import android.widget.ListView;
 import android.widget.QuickContactBadge;
-import android.widget.SearchView;
 import android.widget.SectionIndexer;
 import android.widget.TextView;
 
@@ -291,12 +293,26 @@ public class ContactsListFragment extends ListFragment implements
         }
     }
 
+//    @Override
+//    public void onContactSelected(Uri contactUri) {
+////        if (isTwoPaneLayout && mContactDetailFragment != null) {
+////            // If two pane layout then update the detail fragment to show the selected contact
+////            mContactDetailFragment.setContact(contactUri);
+////        } else {
+////            // Otherwise single pane layout, start a new ContactDetailActivity with
+////            // the contact Uri
+////            Intent intent = new Intent(this, ContactDetailActivity.class);
+////            intent.setData(contactUri);
+////            startActivity(intent);
+////        }
+//    }
+
     /**
      * Called when ListView selection is cleared, for example
      * when search mode is finished and the currently selected
      * contact should no longer be selected.
      */
-    private void onSelectionCleared() {
+    public void onSelectionCleared() {
         // Uses callback to notify activity this contains this fragment
         mOnContactSelectedListener.onSelectionCleared();
 
@@ -312,7 +328,7 @@ public class ContactsListFragment extends ListFragment implements
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 
         // Inflate the menu items
-        inflater.inflate(R.menu.contact_list_menu, menu);
+        inflater.inflate(R.menu.sample_actions, menu);
         // Locate the search item
         MenuItem searchItem = menu.findItem(R.id.menu_search);
 
@@ -332,7 +348,10 @@ public class ContactsListFragment extends ListFragment implements
                     (SearchManager) getActivity().getSystemService(Context.SEARCH_SERVICE);
 
             // Retrieves the SearchView from the search menu item
-            final SearchView searchView = (SearchView) searchItem.getActionView();
+            final SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
+
+            getActivity().getComponentName();
+            searchManager.getSearchableInfo(getActivity().getComponentName());
 
             // Assign searchable info to SearchView
             searchView.setSearchableInfo(
@@ -377,7 +396,8 @@ public class ContactsListFragment extends ListFragment implements
 
             if (Utils.hasICS()) {
                 // This listener added in ICS
-                searchItem.setOnActionExpandListener(new MenuItem.OnActionExpandListener() {
+                MenuItemCompat.setOnActionExpandListener(searchItem, new MenuItemCompat.OnActionExpandListener(){
+//                searchItem.setOnActionExpandListener(new MenuItem.OnActionExpandListener() {
                     @Override
                     public boolean onMenuItemActionExpand(MenuItem menuItem) {
                         // Nothing to do when the action item is expanded

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.theprototypo.billme.ui.detail;
+package com.theprototypo.billme.ui.chat;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -27,20 +27,31 @@ import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
 import com.theprototypo.billme.R;
+import com.theprototypo.billme.ui.chat.mvp.ChatView;
+import com.theprototypo.billme.ui.chat.mvp.message.Message;
+
+import java.util.List;
 
 public class ChatDetailActivity extends AppCompatActivity {
 
     public static final String EXTRA_NAME = "user_name";
     public static final String EXTRA_AVATAR = "avatar_url";
+    public static final String EXTRA_ID = "user_id";
+    public static final String EXTRA_BALANCE = "balance";
+    public String userId;
+    public String balance;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_detail);
 
         Intent intent = getIntent();
         final String name = intent.getStringExtra(EXTRA_NAME);
         final String avatarUrl = intent.getStringExtra(EXTRA_AVATAR);
+        userId = Integer.toString(intent.getIntExtra(EXTRA_ID, 0));
+        balance = intent.getStringExtra(EXTRA_BALANCE);
+
+        setContentView(R.layout.activity_detail);
 
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -51,6 +62,7 @@ public class ChatDetailActivity extends AppCompatActivity {
         collapsingToolbar.setTitle(name);
 
         loadBackdrop(avatarUrl);
+
     }
 
     @Override
@@ -72,5 +84,13 @@ public class ChatDetailActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.sample_actions, menu);
         return true;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public String getBalance() {
+        return balance;
     }
 }
